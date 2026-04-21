@@ -68,10 +68,10 @@ function closeMobile() {
       x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     }
     const wg = ctx.createLinearGradient(0, 0, canvas.width, 0);
-    wg.addColorStop(0, 'rgba(26,92,212,0.0)');
-    wg.addColorStop(0.3, 'rgba(26,92,212,0.15)');
-    wg.addColorStop(0.7, 'rgba(80,250,123,0.1)');
-    wg.addColorStop(1, 'rgba(26,92,212,0.0)');
+    wg.addColorStop(0, 'rgba(201,168,76,0.0)');
+    wg.addColorStop(0.3, 'rgba(201,168,76,0.12)');
+    wg.addColorStop(0.7, 'rgba(160,120,40,0.08)');
+    wg.addColorStop(1, 'rgba(201,168,76,0.0)');
     ctx.strokeStyle = wg;
     ctx.lineWidth = 1.5;
     ctx.stroke();
@@ -83,9 +83,9 @@ function closeMobile() {
       x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     }
     const wg2 = ctx.createLinearGradient(0, 0, canvas.width, 0);
-    wg2.addColorStop(0, 'rgba(124,58,237,0.0)');
-    wg2.addColorStop(0.5, 'rgba(124,58,237,0.12)');
-    wg2.addColorStop(1, 'rgba(124,58,237,0.0)');
+    wg2.addColorStop(0, 'rgba(201,168,76,0.0)');
+    wg2.addColorStop(0.5, 'rgba(201,168,76,0.07)');
+    wg2.addColorStop(1, 'rgba(201,168,76,0.0)');
     ctx.strokeStyle = wg2;
     ctx.lineWidth = 1;
     ctx.stroke();
@@ -98,7 +98,7 @@ function closeMobile() {
       if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(74,158,255,${p.opacity})`;
+      ctx.fillStyle = `rgba(201,168,76,${p.opacity})`;
       ctx.fill();
     });
 
@@ -112,7 +112,7 @@ function closeMobile() {
           ctx.beginPath();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(74,158,255,${0.08 * (1 - dist / 100)})`;
+          ctx.strokeStyle = `rgba(201,168,76,${0.08 * (1 - dist / 100)})`;
           ctx.lineWidth = 0.8;
           ctx.stroke();
         }
