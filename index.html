@@ -63,6 +63,126 @@
         letter-spacing: .5px;
       }
     }
+
+    /* ═══════════════════════════════════════════
+       CORNER FLOAT CARDS — pinned to photo box
+       ═══════════════════════════════════════════ */
+
+    /* Make the image wrapper the positioning context */
+    .hero-img-wrap {
+      position: relative;
+    }
+
+    /* Remove old absolute positioning from float-card classes
+       when used as corner cards — override with corner rules */
+    .corner-card {
+      position: absolute !important;
+      animation: floatAnim 4s ease-in-out infinite !important;
+      min-width: 130px;
+      padding: 12px 14px;
+      z-index: 10;
+      /* Remove the old bottom/right/top offsets from float-card-1/2/3 */
+      bottom: auto; right: auto; top: auto; left: auto;
+    }
+
+    /* TOP-LEFT */
+    .corner-tl {
+      top: -18px;
+      left: -18px;
+      animation-duration: 4s !important;
+      animation-delay: 0s !important;
+    }
+
+    /* TOP-RIGHT */
+    .corner-tr {
+      top: -18px;
+      right: -18px;
+      animation-duration: 5s !important;
+      animation-delay: .4s !important;
+    }
+
+    /* BOTTOM-LEFT */
+    .corner-bl {
+      bottom: -18px;
+      left: -18px;
+      animation-duration: 3.5s !important;
+      animation-delay: .8s !important;
+    }
+
+    /* BOTTOM-RIGHT */
+    .corner-br {
+      bottom: -18px;
+      right: -18px;
+      animation-duration: 4.5s !important;
+      animation-delay: .2s !important;
+    }
+
+    /* Ensure the image placeholder itself has no extra padding
+       so photo fills cleanly edge-to-edge */
+    .hero-img-placeholder {
+      padding: 0 !important;
+      overflow: hidden;
+    }
+    .hero-img-placeholder img {
+      border-radius: var(--radius-lg);
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+    /* Hide old img-label / img-sublabel since photo replaces SVG */
+    .img-label, .img-sublabel { display: none; }
+
+    /* On mobile hide corner cards to keep layout clean */
+    @media (max-width: 768px) {
+      .corner-card { display: none; }
+    }
+
+    /* ═══════════════════════════════════════════
+       MOBILE: Show photo, hide corner cards only
+       ═══════════════════════════════════════════ */
+    @media (max-width: 768px) {
+
+      /* Override style.css which hides hero-visual entirely on mobile */
+      .hero-visual {
+        display: flex !important;
+        flex: none !important;
+        width: 100%;
+        justify-content: center;
+        margin-top: 36px;
+      }
+
+      /* Size the image wrap sensibly for mobile */
+      .hero-img-wrap {
+        width: 220px;
+        height: 280px;
+        flex-shrink: 0;
+      }
+
+      /* Make placeholder fill the wrap */
+      .hero-img-placeholder {
+        width: 100%;
+        height: 100%;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+
+      /* Image fills cleanly */
+      .hero-img-placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+        border-radius: var(--radius-lg);
+        display: block;
+      }
+
+      /* Hide rings on mobile — too wide */
+      .hero-img-ring { display: none; }
+
+      /* Corner cards already hidden via earlier rule */
+    }
   </style>
 </head>
 <body>
@@ -77,7 +197,7 @@
     </a>
     <ul class="nav-links">
       <li><a href="about.html">About</a></li>
-      <li><a href="services.html">Services</a></li>
+      <li><a href="#services">Services</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="portfolio.html">Portfolio</a></li>
       <li><a href="#blog">Insights</a></li>
@@ -93,7 +213,7 @@
 <div class="mobile-menu" id="mobileMenu">
   <ul>
     <li><a href="about.html" onclick="closeMobile()">About</a></li>
-    <li><a href="services.html" onclick="closeMobile()">Services</a></li>
+    <li><a href="#services" onclick="closeMobile()">Services</a></li>
     <li><a href="#skills" onclick="closeMobile()">Skills</a></li>
     <li><a href="portfolio.html" onclick="closeMobile()">Portfolio</a></li>
     <li><a href="#blog" onclick="closeMobile()">Insights</a></li>
@@ -134,45 +254,56 @@
     </div>
 
     <div class="hero-visual">
-      <div class="float-card float-card-1 reveal-float">
-        <div class="fc-label">Revenue Growth</div>
-        <div class="fc-value">+34.7%</div>
-        <div class="fc-bar"><div class="fc-fill" style="width:75%"></div></div>
-      </div>
-      <div class="float-card float-card-2 reveal-float" style="animation-delay:.3s">
-        <div class="fc-label">Reports Delivered</div>
-        <div class="fc-value">200+</div>
-        <div class="fc-icon">📊</div>
-      </div>
-      <div class="float-card float-card-3 reveal-float" style="animation-delay:.6s">
-        <div class="fc-label">Data Accuracy</div>
-        <div class="fc-value">99.8%</div>
-        <div class="fc-ring"></div>
-      </div>
-
       <div class="hero-img-wrap">
         <div class="hero-img-ring"></div>
         <div class="hero-img-ring ring-2"></div>
+
+        <!-- Photo — fills the wrapper cleanly -->
         <div class="hero-img-placeholder">
           <img
             src="Your-Photo.jpg"
             alt="Awais Tahir"
             style="width:100%; height:100%; object-fit:cover; object-position:top; border-radius:inherit;"
           />
-          <div class="img-label">Awais Tahir</div>
-          <div class="img-sublabel">Finance · Analytics · Tech</div>
         </div>
-        <div class="hero-mini-chart">
-          <svg viewBox="0 0 120 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <polyline points="0,40 20,30 40,35 60,15 80,20 100,8 120,12" stroke="url(#cg)" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Corner cards — all inside hero-img-wrap so they anchor to the photo box -->
+
+        <!-- TOP-LEFT: Revenue Growth -->
+        <div class="float-card corner-card corner-tl reveal-float">
+          <div class="fc-label">Revenue Growth</div>
+          <div class="fc-value">+34.7%</div>
+          <div class="fc-bar"><div class="fc-fill" style="width:75%"></div></div>
+        </div>
+
+        <!-- TOP-RIGHT: ACCA -->
+        <div class="float-card corner-card corner-tr reveal-float" style="animation-delay:.2s">
+          <div class="fc-label">Qualification</div>
+          <div class="fc-value" style="font-size:18px">ACCA</div>
+          <div class="fc-icon">🎓</div>
+        </div>
+
+        <!-- BOTTOM-LEFT: Mini chart -->
+        <div class="float-card corner-card corner-bl reveal-float" style="animation-delay:.4s">
+          <div class="fc-label">Performance</div>
+          <svg viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;margin-top:6px">
+            <polyline points="0,35 18,25 35,30 52,12 68,17 85,6 100,9" stroke="url(#cgc)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
             <defs>
-              <linearGradient id="cg" x1="0" y1="0" x2="120" y2="0">
-                <stop stop-color="#50fa7b"/>
-                <stop offset="1" stop-color="#4a9eff"/>
+              <linearGradient id="cgc" x1="0" y1="0" x2="100" y2="0">
+                <stop stop-color="#c9a84c"/>
+                <stop offset="1" stop-color="#f0d080"/>
               </linearGradient>
             </defs>
           </svg>
         </div>
+
+        <!-- BOTTOM-RIGHT: Data Accuracy -->
+        <div class="float-card corner-card corner-br reveal-float" style="animation-delay:.6s">
+          <div class="fc-label">Data Accuracy</div>
+          <div class="fc-value">99.8%</div>
+          <div class="fc-ring"></div>
+        </div>
+
       </div>
     </div>
   </div>
