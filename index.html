@@ -65,82 +65,117 @@
     }
 
     /* ═══════════════════════════════════════════
-       CORNER FLOAT CARDS — pinned to photo box
+       CORNER FLOAT CARDS — fully outside photo
        ═══════════════════════════════════════════ */
 
-    /* Make the image wrapper the positioning context */
+    /* hero-img-wrap: add padding so cards live in that space,
+       completely outside the photo itself */
     .hero-img-wrap {
       position: relative;
+      padding: 80px 90px;   /* top/bottom: 80px, left/right: 90px — card space */
+      box-sizing: border-box;
     }
 
-    /* Remove old absolute positioning from float-card classes
-       when used as corner cards — override with corner rules */
-    .corner-card {
-      position: absolute !important;
-      animation: floatAnim 4s ease-in-out infinite !important;
-      min-width: 130px;
-      padding: 12px 14px;
-      z-index: 10;
-      /* Remove the old bottom/right/top offsets from float-card-1/2/3 */
-      bottom: auto; right: auto; top: auto; left: auto;
-    }
-
-    /* TOP-LEFT */
-    .corner-tl {
-      top: -18px;
-      left: -18px;
-      animation-duration: 4s !important;
-      animation-delay: 0s !important;
-    }
-
-    /* TOP-RIGHT */
-    .corner-tr {
-      top: -18px;
-      right: -18px;
-      animation-duration: 5s !important;
-      animation-delay: .4s !important;
-    }
-
-    /* BOTTOM-LEFT */
-    .corner-bl {
-      bottom: -18px;
-      left: -18px;
-      animation-duration: 3.5s !important;
-      animation-delay: .8s !important;
-    }
-
-    /* BOTTOM-RIGHT */
-    .corner-br {
-      bottom: -18px;
-      right: -18px;
-      animation-duration: 4.5s !important;
-      animation-delay: .2s !important;
-    }
-
-    /* Ensure the image placeholder itself has no extra padding
-       so photo fills cleanly edge-to-edge */
+    /* Photo fills the padded inner area cleanly */
     .hero-img-placeholder {
       padding: 0 !important;
       overflow: hidden;
+      width: 100%;
+      height: 100%;
+      border-radius: var(--radius-lg);
     }
     .hero-img-placeholder img {
-      border-radius: var(--radius-lg);
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
       object-position: top;
+      border-radius: var(--radius-lg);
     }
-    /* Hide old img-label / img-sublabel since photo replaces SVG */
     .img-label, .img-sublabel { display: none; }
 
-    /* On mobile hide corner cards to keep layout clean */
+    /* All 4 corner cards — identical fixed size, fully outside photo */
+    .corner-card {
+      position: absolute !important;
+      /* Fixed equal size for all cards */
+      width: 148px !important;
+      min-width: 148px !important;
+      max-width: 148px !important;
+      height: 82px !important;
+      min-height: 82px !important;
+      max-height: 82px !important;
+      padding: 10px 12px !important;
+      overflow: hidden;
+      z-index: 10;
+      box-sizing: border-box;
+      /* Reset any inherited float-card-1/2/3 positioning */
+      top: auto; bottom: auto; left: auto; right: auto;
+    }
+
+    /* Uniform font sizes inside cards */
+    .corner-card .fc-label {
+      font-size: 9px !important;
+      letter-spacing: 1px;
+      margin-bottom: 3px !important;
+    }
+    .corner-card .fc-value {
+      font-size: 18px !important;
+      line-height: 1.2;
+    }
+    .corner-card .fc-icon {
+      font-size: 16px !important;
+      margin-top: 2px !important;
+    }
+    .corner-card .fc-bar {
+      margin-top: 5px !important;
+      height: 3px !important;
+    }
+    .corner-card .fc-ring {
+      width: 22px !important;
+      height: 22px !important;
+      margin-top: 4px !important;
+    }
+    .corner-card svg {
+      height: 26px !important;
+      margin-top: 2px !important;
+    }
+
+    /* Position each card fully in the padding zone — outside the photo */
+    /* TOP-LEFT: sits in the top-left padding corner */
+    .corner-tl {
+      top: 0 !important;
+      left: 0 !important;
+      animation: floatAnim 4s ease-in-out infinite !important;
+    }
+
+    /* TOP-RIGHT: sits in the top-right padding corner */
+    .corner-tr {
+      top: 0 !important;
+      right: 0 !important;
+      animation: floatAnim 5s ease-in-out infinite .4s !important;
+    }
+
+    /* BOTTOM-LEFT: sits in the bottom-left padding corner */
+    .corner-bl {
+      bottom: 0 !important;
+      left: 0 !important;
+      animation: floatAnim 3.5s ease-in-out infinite .8s !important;
+    }
+
+    /* BOTTOM-RIGHT: sits in the bottom-right padding corner */
+    .corner-br {
+      bottom: 0 !important;
+      right: 0 !important;
+      animation: floatAnim 4.5s ease-in-out infinite .2s !important;
+    }
+
+    /* On mobile hide corner cards — photo shows clean */
     @media (max-width: 768px) {
-      .corner-card { display: none; }
+      .corner-card { display: none !important; }
     }
 
     /* ═══════════════════════════════════════════
-       MOBILE: Show photo, hide corner cards only
+       MOBILE: Show photo clean, no cards, no padding
        ═══════════════════════════════════════════ */
     @media (max-width: 768px) {
 
@@ -153,22 +188,22 @@
         margin-top: 36px;
       }
 
-      /* Size the image wrap sensibly for mobile */
+      /* Remove the desktop padding — on mobile there are no corner cards
+         so the wrap should just be the photo size */
       .hero-img-wrap {
-        width: 220px;
-        height: 280px;
+        padding: 0 !important;
+        width: 220px !important;
+        height: 280px !important;
         flex-shrink: 0;
       }
 
-      /* Make placeholder fill the wrap */
+      /* Photo fills cleanly */
       .hero-img-placeholder {
-        width: 100%;
-        height: 100%;
+        width: 100% !important;
+        height: 100% !important;
         border-radius: var(--radius-lg);
         overflow: hidden;
       }
-
-      /* Image fills cleanly */
       .hero-img-placeholder img {
         width: 100%;
         height: 100%;
@@ -180,8 +215,6 @@
 
       /* Hide rings on mobile — too wide */
       .hero-img-ring { display: none; }
-
-      /* Corner cards already hidden via earlier rule */
     }
   </style>
 </head>
@@ -198,7 +231,7 @@
     <ul class="nav-links">
       <li><a href="about.html">About</a></li>
       <li><a href="#services">Services</a></li>
-      <li><a href="#skills">Skills</a></li>
+      <li><a href="skills.html">Skills</a></li>
       <li><a href="portfolio.html">Portfolio</a></li>
       <li><a href="#blog">Insights</a></li>
       <li><a href="#contact" class="nav-cta">Let's Talk</a></li>
@@ -214,7 +247,7 @@
   <ul>
     <li><a href="about.html" onclick="closeMobile()">About</a></li>
     <li><a href="#services" onclick="closeMobile()">Services</a></li>
-    <li><a href="#skills" onclick="closeMobile()">Skills</a></li>
+    <li><a href="skills.html" onclick="closeMobile()">Skills</a></li>
     <li><a href="portfolio.html" onclick="closeMobile()">Portfolio</a></li>
     <li><a href="#blog" onclick="closeMobile()">Insights</a></li>
     <li><a href="#contact" onclick="closeMobile()">Contact</a></li>
@@ -888,7 +921,8 @@
         <div class="fl-col">
           <div class="fl-title">Quick Links</div>
           <!-- ✅ FIX: footer about link updated to match renamed section id -->
-          <a href="#about-section">About</a>
+          <a href="about.html">About</a>
+           <a href="services.html">Services</a>
           <a href="portfolio.html">Portfolio</a>
           <a href="#blog">Insights</a>
           <a href="#contact">Contact</a>
@@ -898,8 +932,8 @@
     <div class="footer-bottom">
       <span>Built with precision · iamawaistahir.com</span>
       <div class="footer-socials">
-        <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn">in</a>
-        <a href="https://wa.me/923001234567" target="_blank" aria-label="WhatsApp">wa</a>
+        <a href="https://linkedin.com/in/iamawais1628/" target="_blank" aria-label="LinkedIn">in</a>
+        <a href="https://wa.me/923000889402" target="_blank" aria-label="WhatsApp">wa</a>
       </div>
     </div>
   </div>
