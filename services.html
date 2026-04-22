@@ -578,6 +578,51 @@
       .srv-cta-btns { flex-direction: column; align-items: center; }
       .srv-item-number { font-size: 80px; }
     }
+
+    /* ── Mobile image overlap fix ──
+       On mobile, srv-item-inner becomes single column.
+       Each srv-item shows: [image] then [text] (or reversed).
+       We force a consistent order: text first, image second
+       for ALL items on mobile so there's never two images
+       sitting back-to-back between adjacent service sections. */
+    @media (max-width: 768px) {
+      .srv-item {
+        padding: 48px 0;
+      }
+      .srv-item-inner {
+        grid-template-columns: 1fr !important;
+        gap: 32px !important;
+        direction: ltr !important;
+      }
+      /* Always put srv-info (text) first, srv-visual (image) second */
+      .srv-item-inner .srv-info   { order: 1; }
+      .srv-item-inner .srv-visual { order: 2; }
+      /* Reverse layout items also get the same order */
+      .srv-item-inner.reverse .srv-info   { order: 1; }
+      .srv-item-inner.reverse .srv-visual { order: 2; }
+      /* Add a clear gold divider line between the image of one
+         service and the start of the next service section */
+      .srv-item + .srv-item {
+        border-top: 1px solid rgba(201,168,76,.15);
+      }
+      /* Limit visual mock height on mobile so it doesn't dominate */
+      .srv-visual {
+        max-height: 340px;
+        overflow: hidden;
+      }
+      .srv-visual-body {
+        padding: 18px 16px;
+      }
+      /* Scale down mock code blocks on small screens */
+      .mock-code {
+        font-size: 10.5px;
+        padding: 10px 12px;
+      }
+      /* 3-col metrics → 2-col on mobile */
+      .srv-metrics {
+        grid-template-columns: 1fr 1fr !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -751,7 +796,7 @@
       </article>
 
       <!-- ══ 02 FINANCIAL REPORTING ══ -->
-      <article class="srv-item scroll-reveal" id="reporting" style="background:var(--navy-2)">
+      <article class="srv-item scroll-reveal" id="financial-reporting" style="background:var(--navy-2)">
         <div class="srv-item-number">02</div>
         <div class="srv-item-inner reverse">
           <div class="srv-info">
@@ -827,7 +872,7 @@
       </article>
 
       <!-- ══ 03 DATA ANALYTICS ══ -->
-      <article class="srv-item scroll-reveal" id="analytics">
+      <article class="srv-item scroll-reveal" id="data-analytics">
         <div class="srv-item-number">03</div>
         <div class="srv-item-inner">
           <div class="srv-visual">
@@ -907,7 +952,7 @@
       </article>
 
       <!-- ══ 04 POWER BI ══ -->
-      <article class="srv-item scroll-reveal" id="powerbi" style="background:var(--navy-2)">
+      <article class="srv-item scroll-reveal" id="power-bi" style="background:var(--navy-2)">
         <div class="srv-item-number">04</div>
         <div class="srv-item-inner reverse">
           <div class="srv-info">
@@ -997,7 +1042,7 @@
       </article>
 
       <!-- ══ 05 SQL ANALYSIS ══ -->
-      <article class="srv-item scroll-reveal" id="sql">
+      <article class="srv-item scroll-reveal" id="sql-analysis">
         <div class="srv-item-number">05</div>
         <div class="srv-item-inner">
           <div class="srv-visual">
@@ -1066,7 +1111,7 @@
       </article>
 
       <!-- ══ 06 PYTHON AUTOMATION ══ -->
-      <article class="srv-item scroll-reveal" id="automation" style="background:var(--navy-2)">
+      <article class="srv-item scroll-reveal" id="python-automation" style="background:var(--navy-2)">
         <div class="srv-item-number">06</div>
         <div class="srv-item-inner reverse">
           <div class="srv-info">
@@ -1138,7 +1183,7 @@
       </article>
 
       <!-- ══ 07 BUSINESS INTELLIGENCE ══ -->
-      <article class="srv-item scroll-reveal" id="bi">
+      <article class="srv-item scroll-reveal" id="business-intelligence">
         <div class="srv-item-number">07</div>
         <div class="srv-item-inner">
           <div class="srv-visual">
@@ -1224,7 +1269,7 @@
       </article>
 
       <!-- ══ 08 SOFTWARE DEVELOPMENT ══ -->
-      <article class="srv-item scroll-reveal" id="software" style="background:var(--navy-2)">
+      <article class="srv-item scroll-reveal" id="software-development" style="background:var(--navy-2)">
         <div class="srv-item-number">08</div>
         <div class="srv-item-inner reverse">
           <div class="srv-info">
@@ -1524,11 +1569,11 @@
         <div class="fl-col">
           <div class="fl-title">Services</div>
           <a href="#bookkeeping">Bookkeeping</a>
-          <a href="#reporting">Financial Reporting</a>
-          <a href="#analytics">Data Analytics</a>
-          <a href="#powerbi">Power BI</a>
-          <a href="#automation">Python Automation</a>
-          <a href="#bi">Business Intelligence</a>
+          <a href="#financial-reporting">Financial Reporting</a>
+          <a href="#data-analytics">Data Analytics</a>
+          <a href="#power-bi">Power BI</a>
+          <a href="#python-automation">Python Automation</a>
+          <a href="#business-intelligence">Business Intelligence</a>
         </div>
         <div class="fl-col">
           <div class="fl-title">Quick Links</div>
