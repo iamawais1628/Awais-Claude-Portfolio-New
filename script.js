@@ -227,6 +227,38 @@ function handleSubmit(e) {
   }, 1200);
 }
 
+
+emailjs.init("mIlimpkymZT_uHx_7");
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("contact-form");
+    const successMessage = document.getElementById("formSuccess");
+
+    if (form) {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            emailjs.sendForm(
+                "service_ellgox6",
+                "template_bmc5m4h",
+                this
+            )
+            .then(function () {
+                successMessage.style.display = "block";
+                form.reset();
+
+                setTimeout(() => {
+                    successMessage.style.display = "none";
+                }, 5000);
+            })
+            .catch(function (error) {
+                console.error("EmailJS Error:", error);
+                alert("Message failed to send.");
+            });
+        });
+    }
+});
+
 /* ─── Smooth active nav highlight ─── */
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-links a');
