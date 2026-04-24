@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQL Window Functions Every Finance Analyst Should Know | Awais Tahir</title>
+  <meta name="description" content="A practical guide to SQL window functions using real financial examples — running totals, period-over-period, customer ranking, and rolling averages." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="blog-post.css" />
+</head>
+<body>
+<nav id="navbar"><div class="nav-inner"><a href="../index.html" class="nav-logo"><span class="logo-at">AT</span><span class="logo-name">Awais Tahir</span></a><ul class="nav-links"><li><a href="../about.html">About</a></li><li><a href="../services.html">Services</a></li><li><a href="../skills.html">Skills</a></li><li><a href="../portfolio.html">Portfolio</a></li><li><a href="../insights.html" style="color:var(--blue-light)">Insights</a></li><li><a href="../index.html#contact" class="nav-cta">Let's Talk</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></nav>
+<div class="mobile-menu" id="mobileMenu"><ul><li><a href="../about.html" onclick="closeMobile()">About</a></li><li><a href="../services.html" onclick="closeMobile()">Services</a></li><li><a href="../skills.html" onclick="closeMobile()">Skills</a></li><li><a href="../portfolio.html" onclick="closeMobile()">Portfolio</a></li><li><a href="../insights.html" onclick="closeMobile()">Insights</a></li><li><a href="../index.html#contact" onclick="closeMobile()">Contact</a></li></ul></div>
+
+<section class="blog-hero">
+  <div class="blog-hero-orb bh-orb-1"></div><div class="blog-hero-orb bh-orb-2"></div>
+  <div class="container">
+    <div class="blog-breadcrumb"><a href="../index.html">Home</a> › <a href="../insights.html">Insights</a> › <span>Data Analytics</span></div>
+    <div class="blog-cat">🗄️ Data Analytics</div>
+    <h1 class="blog-title">SQL Window Functions Every Finance Analyst Should Know — With Real Financial Examples</h1>
+    <div class="blog-meta-row">
+      <div class="blog-author"><div class="blog-author-avatar">AT</div><div><div class="blog-author-name">Awais Tahir</div><div class="blog-author-role">Finance Professional · Data Analyst</div></div></div>
+      <div class="blog-meta-sep"></div>
+      <div class="blog-meta-item">📅 April 10, 2025</div>
+      <div class="blog-meta-item">⏱ 9 min read</div>
+      <div class="blog-meta-item">👁 SQL · Finance</div>
+    </div>
+    <div class="blog-tags"><span class="blog-tag">SQL</span><span class="blog-tag">Window Functions</span><span class="blog-tag">PostgreSQL</span><span class="blog-tag">Finance Analytics</span></div>
+  </div>
+</section>
+<div class="blog-banner" style="background:linear-gradient(135deg,#080818 0%,#1a1a4a 50%,#7c3aed 100%)"><div class="blog-banner-emoji">🗄️</div></div>
+
+<section class="blog-body-section">
+  <div class="container">
+    <div class="blog-layout">
+      <article class="blog-content">
+
+        <div class="blog-summary">
+          <div class="blog-summary-title">⚡ Key Takeaways</div>
+          <ul>
+            <li>Window functions perform calculations across rows related to the current row — without collapsing them like GROUP BY does</li>
+            <li>ROW_NUMBER, RANK, DENSE_RANK — essential for customer and product ranking reports</li>
+            <li>LAG and LEAD — the fastest way to build period-over-period comparisons in SQL</li>
+            <li>SUM() OVER() — running totals without self-joins or subqueries</li>
+            <li>NTILE — instantly segment customers into quartiles for LTV analysis</li>
+          </ul>
+        </div>
+
+        <h2>Why Finance Analysts Need Window Functions</h2>
+        <p>Most SQL analysts learn SELECT, WHERE, GROUP BY, and JOIN — and stop there. That covers 80% of queries. But the remaining 20% — the queries that produce genuinely insightful finance reports — almost always require window functions.</p>
+        <p>Window functions let you perform calculations across a set of rows that are related to the current row, while keeping all the individual rows in your result. The key difference from GROUP BY: <strong>GROUP BY collapses rows into one per group. Window functions add a calculated column without collapsing anything.</strong></p>
+        <p>Every example below uses a real finance scenario you can adapt immediately.</p>
+
+        <h2>The Syntax — Understanding OVER()</h2>
+        <p>All window functions share the same structure:</p>
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>Window Function Syntax</span></div>
+          <pre><span class="fn">FUNCTION_NAME</span>() <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> column_name    <span class="cmt">-- optional: reset per group</span>
+    <span class="kw">ORDER BY</span>     column_name    <span class="cmt">-- optional: defines row order</span>
+    <span class="kw">ROWS BETWEEN</span> ...           <span class="cmt">-- optional: window frame</span>
+)</pre>
+        </div>
+        <p>The <strong>PARTITION BY</strong> clause resets the calculation for each group — similar to GROUP BY but without collapsing. The <strong>ORDER BY</strong> clause defines the order within the partition. The <strong>ROWS BETWEEN</strong> clause defines which rows to include in the calculation window.</p>
+
+        <h2>1. ROW_NUMBER — Ranking Your Best Customers</h2>
+        <p>ROW_NUMBER assigns a unique sequential number to each row within a partition. Classic use case: rank customers by total revenue to find your top 10.</p>
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>PostgreSQL — Customer Revenue Ranking</span></div>
+          <pre><span class="kw">SELECT</span>
+    customer_id,
+    customer_name,
+    segment,
+    total_revenue,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+        <span class="kw">ORDER BY</span> total_revenue <span class="kw">DESC</span>
+    ) <span class="kw">AS</span> revenue_rank,
+    <span class="fn">ROW_NUMBER</span>() <span class="kw">OVER</span> (
+        <span class="kw">PARTITION BY</span> segment
+        <span class="kw">ORDER BY</span> total_revenue <span class="kw">DESC</span>
+    ) <span class="kw">AS</span> rank_within_segment
+<span class="kw">FROM</span> customer_revenue_summary
+<span class="kw">ORDER BY</span> revenue_rank;
+
+<span class="cmt">-- Result: every customer ranked globally AND within their segment</span>
+<span class="cmt">-- customer_id | name     | segment    | revenue | rank | seg_rank</span>
+<span class="cmt">-- C-00247     | Acme Ltd | Enterprise | 284,420 |  1   |    1</span>
+<span class="cmt">-- C-00891     | Beta Co  | Mid-Market | 142,810 |  2   |    1</span>
+<span class="cmt">-- C-01204     | Gamma Inc| Enterprise |  98,340 |  3   |    2</span></pre>
+        </div>
+        <div class="blog-callout tip">
+          <div class="blog-callout-icon">✅</div>
+          <div class="blog-callout-body">
+            <div class="blog-callout-title">Finance use case</div>
+            <div class="blog-callout-text">Wrap this in a CTE and filter WHERE revenue_rank &lt;= 10 to get your top 10 customers. Add PARTITION BY region to get top 10 per region simultaneously — one query, no UNION.</div>
+          </div>
+        </div>
+
+        <h2>2. LAG and LEAD — Period-Over-Period Comparisons</h2>
+        <p>LAG() accesses the value from a previous row. LEAD() accesses the value from a following row. This is the cleanest way to build month-over-month or year-over-year variance reports without self-joins.</p>
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>PostgreSQL — Monthly Revenue MOM Variance</span></div>
+          <pre><span class="kw">SELECT</span>
+    month,
+    revenue,
+    <span class="fn">LAG</span>(revenue) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> month) <span class="kw">AS</span> prev_month_revenue,
+
+    revenue - <span class="fn">LAG</span>(revenue) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> month)
+        <span class="kw">AS</span> mom_variance,
+
+    <span class="fn">ROUND</span>(
+        (revenue - <span class="fn">LAG</span>(revenue) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> month))
+        / <span class="fn">NULLIF</span>(<span class="fn">LAG</span>(revenue) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> month), <span class="num">0</span>) * <span class="num">100</span>, <span class="num">1</span>
+    ) <span class="kw">AS</span> mom_pct_change
+
+<span class="kw">FROM</span> monthly_revenue
+<span class="kw">ORDER BY</span> month;
+
+<span class="cmt">-- month    | revenue | prev_revenue | variance | pct_change</span>
+<span class="cmt">-- 2025-01  | 38,200  |     NULL     |   NULL   |    NULL</span>
+<span class="cmt">-- 2025-02  | 41,800  |    38,200    |   3,600  |    +9.4%</span>
+<span class="cmt">-- 2025-03  | 39,100  |    41,800    |  -2,700  |    -6.5%</span>
+<span class="cmt">-- 2025-04  | 48,200  |    39,100    |   9,100  |   +23.3%</span></pre>
+        </div>
+
+        <h2>3. SUM() OVER() — Running Totals</h2>
+        <p>Running totals — the cumulative sum up to and including the current row — are one of the most requested finance reports. With a window function, it's a single line of DAX.</p>
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>PostgreSQL — YTD Running Total</span></div>
+          <pre><span class="kw">SELECT</span>
+    month,
+    revenue,
+    <span class="fn">SUM</span>(revenue) <span class="kw">OVER</span> (
+        <span class="kw">ORDER BY</span> month
+        <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>
+    ) <span class="kw">AS</span> ytd_revenue,
+
+    <span class="fn">SUM</span>(expenses) <span class="kw">OVER</span> (
+        <span class="kw">ORDER BY</span> month
+        <span class="kw">ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW</span>
+    ) <span class="kw">AS</span> ytd_expenses,
+
+    <span class="fn">AVG</span>(revenue) <span class="kw">OVER</span> (
+        <span class="kw">ORDER BY</span> month
+        <span class="kw">ROWS BETWEEN</span> <span class="num">2</span> <span class="kw">PRECEDING AND CURRENT ROW</span>
+    ) <span class="kw">AS</span> rolling_3m_avg
+
+<span class="kw">FROM</span> monthly_financials
+<span class="kw">WHERE</span> <span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> month) = <span class="num">2025</span>
+<span class="kw">ORDER BY</span> month;</pre>
+        </div>
+        <div class="blog-callout info">
+          <div class="blog-callout-icon">💡</div>
+          <div class="blog-callout-body">
+            <div class="blog-callout-title">ROWS BETWEEN explained</div>
+            <div class="blog-callout-text">UNBOUNDED PRECEDING means "from the very first row". CURRENT ROW means "up to and including this row". 2 PRECEDING means "the 2 rows before this one". So ROWS BETWEEN 2 PRECEDING AND CURRENT ROW gives you a 3-month rolling window.</div>
+          </div>
+        </div>
+
+        <h2>4. NTILE — Customer Segmentation into Quartiles</h2>
+        <p>NTILE(n) divides rows into n roughly equal buckets. This is the foundation of RFM (Recency, Frequency, Monetary) segmentation — the industry-standard customer segmentation model.</p>
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>PostgreSQL — LTV Quartile Segmentation</span></div>
+          <pre><span class="kw">WITH</span> customer_ltv <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>
+        customer_id,
+        <span class="fn">SUM</span>(order_value) <span class="kw">AS</span> lifetime_value,
+        <span class="fn">COUNT</span>(order_id)  <span class="kw">AS</span> total_orders,
+        <span class="fn">MAX</span>(order_date)  <span class="kw">AS</span> last_order_date
+    <span class="kw">FROM</span> orders
+    <span class="kw">GROUP BY</span> customer_id
+)
+<span class="kw">SELECT</span>
+    customer_id,
+    lifetime_value,
+    total_orders,
+    <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> lifetime_value <span class="kw">DESC</span>) <span class="kw">AS</span> ltv_quartile,
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> lifetime_value <span class="kw">DESC</span>) = <span class="num">1</span>
+            <span class="kw">THEN</span> <span class="str">'Champions'</span>
+        <span class="kw">WHEN</span> <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> lifetime_value <span class="kw">DESC</span>) = <span class="num">2</span>
+            <span class="kw">THEN</span> <span class="str">'Loyal'</span>
+        <span class="kw">WHEN</span> <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> lifetime_value <span class="kw">DESC</span>) = <span class="num">3</span>
+            <span class="kw">THEN</span> <span class="str">'At Risk'</span>
+        <span class="kw">ELSE</span> <span class="str">'Lost'</span>
+    <span class="kw">END</span> <span class="kw">AS</span> segment
+<span class="kw">FROM</span> customer_ltv
+<span class="kw">ORDER BY</span> lifetime_value <span class="kw">DESC</span>;</pre>
+        </div>
+
+        <h2>5. RANK vs DENSE_RANK — When Ties Matter</h2>
+        <p>ROW_NUMBER gives every row a unique number even if values are identical. RANK skips numbers after a tie. DENSE_RANK never skips numbers. For finance reports, the right choice depends on what you're ranking:</p>
+        <ul>
+          <li><strong>Use ROW_NUMBER</strong> when you need exactly N rows — e.g. top 10 products. Ties are broken arbitrarily.</li>
+          <li><strong>Use RANK</strong> for competition-style ranking — if two products tie for 3rd, both get rank 3, the next gets rank 5.</li>
+          <li><strong>Use DENSE_RANK</strong> when you want no gaps — if two products tie for 3rd, the next gets rank 4, not 5.</li>
+        </ul>
+
+        <div class="blog-callout warn">
+          <div class="blog-callout-icon">⚠️</div>
+          <div class="blog-callout-body">
+            <div class="blog-callout-title">Performance note</div>
+            <div class="blog-callout-text">Window functions can be expensive on large tables. Always ensure the columns in your PARTITION BY and ORDER BY clauses are indexed. On tables over 1M rows, test your query execution plan with EXPLAIN ANALYZE before running in production.</div>
+          </div>
+        </div>
+
+        <h2>Putting It All Together — A Complete Finance Report Query</h2>
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>PostgreSQL — Full Monthly Finance Dashboard Query</span></div>
+          <pre><span class="kw">SELECT</span>
+    month,
+    revenue,
+    expenses,
+    revenue - expenses                          <span class="kw">AS</span> net_profit,
+
+    <span class="cmt">-- Running totals</span>
+    <span class="fn">SUM</span>(revenue)  <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> month)        <span class="kw">AS</span> ytd_revenue,
+    <span class="fn">SUM</span>(expenses) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> month)        <span class="kw">AS</span> ytd_expenses,
+
+    <span class="cmt">-- MOM variance</span>
+    revenue - <span class="fn">LAG</span>(revenue) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> month) <span class="kw">AS</span> mom_variance,
+
+    <span class="cmt">-- Rolling 3-month average</span>
+    <span class="fn">AVG</span>(revenue) <span class="kw">OVER</span> (
+        <span class="kw">ORDER BY</span> month
+        <span class="kw">ROWS BETWEEN</span> <span class="num">2</span> <span class="kw">PRECEDING AND CURRENT ROW</span>
+    )                                           <span class="kw">AS</span> rolling_3m_avg,
+
+    <span class="cmt">-- Month rank by revenue</span>
+    <span class="fn">RANK</span>() <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> revenue <span class="kw">DESC</span>)       <span class="kw">AS</span> revenue_rank
+
+<span class="kw">FROM</span> monthly_financials
+<span class="kw">WHERE</span> <span class="fn">EXTRACT</span>(<span class="kw">YEAR FROM</span> month) = <span class="num">2025</span>
+<span class="kw">ORDER BY</span> month;</pre>
+        </div>
+
+        <div class="blog-divider"></div>
+        <div class="blog-cta-banner">
+          <div class="blog-cta-text">
+            <h3>Need SQL Analysis for Your Business?</h3>
+            <p>I design and write complex SQL queries and ETL pipelines that turn your database into a financial intelligence engine. From customer segmentation to monthly finance dashboards.</p>
+          </div>
+          <div class="blog-cta-btns">
+            <a href="../index.html#contact" class="btn-primary">Get a Quote →</a>
+            <a href="../services.html#sql" class="btn-ghost">View Service</a>
+          </div>
+        </div>
+      </article>
+
+      <aside class="blog-sidebar">
+        <div class="blog-toc">
+          <div class="blog-toc-title">Table of Contents</div>
+          <ul class="blog-toc-list">
+            <li><a href="#" onclick="return false">Why Finance Analysts Need Window Functions</a></li>
+            <li><a href="#" onclick="return false">The OVER() Syntax</a></li>
+            <li><a href="#" onclick="return false">ROW_NUMBER — Customer Ranking</a></li>
+            <li><a href="#" onclick="return false">LAG & LEAD — Period Comparisons</a></li>
+            <li><a href="#" onclick="return false">SUM OVER — Running Totals</a></li>
+            <li><a href="#" onclick="return false">NTILE — Quartile Segmentation</a></li>
+            <li><a href="#" onclick="return false">RANK vs DENSE_RANK</a></li>
+            <li><a href="#" onclick="return false">Full Dashboard Query</a></li>
+          </ul>
+        </div>
+        <div class="blog-sidebar-author">
+          <div class="bsa-avatar">AT</div>
+          <div class="bsa-name">Awais Tahir</div>
+          <div class="bsa-role">Finance Professional · Data Analyst</div>
+          <div class="bsa-desc">Writing SQL that extracts financial intelligence from large datasets — turning raw transaction data into actionable business insight.</div>
+          <a href="../about.html" class="btn-ghost" style="width:100%;justify-content:center;font-size:13px;padding:10px">View Profile</a>
+        </div>
+        <div class="blog-related-sidebar">
+          <div class="blog-related-sidebar-title">Related Articles</div>
+          <a href="blog-customer-lifetime-value.html" class="brs-item"><div class="brs-icon" style="background:linear-gradient(135deg,#0a1a3a,#1a5cd4)">🎯</div><div><div class="brs-title">How to Calculate Customer LTV Using SQL & Python</div><div class="brs-cat">Data Analytics</div></div></a>
+          <a href="blog-pandas-financial-data.html" class="brs-item"><div class="brs-icon" style="background:linear-gradient(135deg,#0d2d0d,#059669)">🐍</div><div><div class="brs-title">Cleaning Financial Data with Python Pandas</div><div class="brs-cat">Python</div></div></a>
+          <a href="blog-power-bi-mistakes.html" class="brs-item"><div class="brs-icon" style="background:linear-gradient(135deg,#4a2800,#f59e0b)">📈</div><div><div class="brs-title">7 Power BI Dashboard Mistakes</div><div class="brs-cat">Power BI</div></div></a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="blog-related-section">
+  <div class="container">
+    <div class="section-header scroll-reveal" style="margin-bottom:36px"><div class="section-label">Keep Reading</div><h2 class="section-title">More <span class="gradient-text">Articles</span></h2></div>
+    <div class="blog-related-grid">
+      <a href="blog-customer-lifetime-value.html" class="brel-card scroll-reveal"><div class="brel-img" style="background:linear-gradient(135deg,#080a10,#0a1a3a,#1a5cd4)">🎯</div><div class="brel-body"><div class="brel-cat">Data Analytics</div><div class="brel-title">How to Calculate Customer Lifetime Value Using SQL and Python</div><div class="brel-link">Read Article →</div></div></a>
+      <a href="blog-pandas-financial-data.html" class="brel-card scroll-reveal" style="transition-delay:.1s"><div class="brel-img" style="background:linear-gradient(135deg,#080d08,#0d2d0d,#059669)">🐍</div><div class="brel-body"><div class="brel-cat">Python</div><div class="brel-title">Cleaning Messy Financial Data with Python Pandas</div><div class="brel-link">Read Article →</div></div></a>
+      <a href="blog-ifrs-financial-statements.html" class="brel-card scroll-reveal" style="transition-delay:.2s"><div class="brel-img" style="background:linear-gradient(135deg,#1a1a0a,#3d2b00,#c9a84c)">📊</div><div class="brel-body"><div class="brel-cat">Financial Reporting</div><div class="brel-title">The Complete Guide to IFRS Financial Statements for SMEs</div><div class="brel-link">Read Article →</div></div></a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-inner"><div class="footer-brand"><div class="footer-logo"><span class="logo-at">AT</span><span class="logo-name">Awais Tahir</span></div><p class="footer-tagline">Finance Professional · Data Analyst · Future Finance-Tech Founder</p><p class="footer-copy">© 2025 Awais Tahir · iamawaistahir.com · All Rights Reserved</p></div><div class="footer-links"><div class="fl-col"><div class="fl-title">Quick Links</div><a href="../about.html">About</a><a href="../services.html">Services</a><a href="../portfolio.html">Portfolio</a><a href="../insights.html">All Articles</a><a href="../index.html#contact">Contact</a></div><div class="fl-col"><div class="fl-title">More Articles</div><a href="blog-ifrs-financial-statements.html">IFRS Guide</a><a href="blog-power-bi-mistakes.html">Power BI Mistakes</a><a href="blog-pandas-financial-data.html">Pandas Guide</a><a href="blog-cash-flow-management.html">Cash Flow</a></div></div></div><div class="footer-bottom"><span>Built with precision · iamawaistahir.com</span><div class="footer-socials"><a href="https://www.linkedin.com/in/iamawais1628/" target="_blank">in</a><a href="https://wa.me/923000889402" target="_blank">wa</a></div></div></div></footer>
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>const nb=document.getElementById('navbar');window.addEventListener('scroll',()=>{nb.classList.toggle('scrolled',window.scrollY>40);document.getElementById('scrollTop').classList.toggle('visible',window.scrollY>400);});const hb=document.getElementById('hamburger'),mm=document.getElementById('mobileMenu');hb.addEventListener('click',()=>{mm.classList.toggle('open');const s=hb.querySelectorAll('span');if(mm.classList.contains('open')){s[0].style.transform='rotate(45deg) translate(5px,5px)';s[1].style.opacity='0';s[2].style.transform='rotate(-45deg) translate(5px,-5px)';}else{s.forEach(x=>{x.style.transform='';x.style.opacity='';})}});function closeMobile(){mm.classList.remove('open');hb.querySelectorAll('span').forEach(s=>{s.style.transform='';s.style.opacity='';})}const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');})},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.scroll-reveal').forEach(el=>obs.observe(el));</script>
+</body></html>
