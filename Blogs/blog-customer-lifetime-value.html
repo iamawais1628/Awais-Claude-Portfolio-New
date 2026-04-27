@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Calculate Customer Lifetime Value (LTV) Using SQL and Python | Awais Tahir</title>
+  <meta name="description" content="A complete LTV model with real SQL queries and Python code — from basic calculation to RFM segmentation. Apply it to your business immediately." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css" /><link rel="stylesheet" href="blog-post.css" />
+</head>
+<body>
+<nav id="navbar"><div class="nav-inner"><a href="../index.html" class="nav-logo"><span class="logo-at">AT</span><span class="logo-name">Awais Tahir</span></a><ul class="nav-links"><li><a href="../about.html">About</a></li><li><a href="../services.html">Services</a></li><li><a href="../skills.html">Skills</a></li><li><a href="../portfolio.html">Portfolio</a></li><li><a href="../insights.html" style="color:var(--blue-light)">Insights</a></li><li><a href="../index.html#contact" class="nav-cta">Let's Talk</a></li></ul><button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button></div></nav>
+<div class="mobile-menu" id="mobileMenu"><ul><li><a href="../about.html" onclick="closeMobile()">About</a></li><li><a href="../services.html" onclick="closeMobile()">Services</a></li><li><a href="../skills.html" onclick="closeMobile()">Skills</a></li><li><a href="../portfolio.html" onclick="closeMobile()">Portfolio</a></li><li><a href="../insights.html" onclick="closeMobile()">Insights</a></li><li><a href="../index.html#contact" onclick="closeMobile()">Contact</a></li></ul></div>
+
+<section class="blog-hero">
+  <div class="blog-hero-orb bh-orb-1"></div><div class="blog-hero-orb bh-orb-2"></div>
+  <div class="container">
+    <div class="blog-breadcrumb"><a href="../index.html">Home</a> › <a href="../insights.html">Insights</a> › <span>Data Analytics</span></div>
+    <div class="blog-cat">🎯 Data Analytics</div>
+    <h1 class="blog-title">How to Calculate Customer Lifetime Value (LTV) Using SQL and Python — Full Worked Example</h1>
+    <div class="blog-meta-row">
+      <div class="blog-author"><div class="blog-author-avatar">AT</div><div><div class="blog-author-name">Awais Tahir</div><div class="blog-author-role">Finance Professional · Data Analyst</div></div></div>
+      <div class="blog-meta-sep"></div>
+      <div class="blog-meta-item">📅 March 28, 2025</div>
+      <div class="blog-meta-item">⏱ 10 min read</div>
+      <div class="blog-meta-item">👁 LTV · SQL · Python</div>
+    </div>
+    <div class="blog-tags"><span class="blog-tag">LTV</span><span class="blog-tag">SQL</span><span class="blog-tag">Python</span><span class="blog-tag">RFM</span><span class="blog-tag">Customer Analytics</span></div>
+  </div>
+</section>
+<div class="blog-banner" style="background:linear-gradient(135deg,#080a10 0%,#0a1a3a 50%,#1a5cd4 100%)"><div class="blog-banner-emoji">🎯</div></div>
+
+<section class="blog-body-section">
+  <div class="container">
+    <div class="blog-layout">
+      <article class="blog-content">
+
+        <div class="blog-summary">
+          <div class="blog-summary-title">⚡ Key Takeaways</div>
+          <ul>
+            <li>LTV is the total revenue a customer generates over their entire relationship with your business</li>
+            <li>Most companies either do not calculate LTV or use a formula that ignores churn — both are costly mistakes</li>
+            <li>The historic LTV model uses actual transaction data — the most reliable method for any business with existing data</li>
+            <li>RFM segmentation (Recency, Frequency, Monetary) lets you act on LTV — not just measure it</li>
+            <li>The ratio of LTV to Customer Acquisition Cost (CAC) is the most important unit economics metric for any business</li>
+          </ul>
+        </div>
+
+        <h2>Why LTV Is the Most Important Number in Your Business</h2>
+        <p>Customer Lifetime Value answers one question: <strong>how much is a customer actually worth to your business?</strong> Not just their first order — their entire relationship, across every purchase, over every year they remain a customer.</p>
+        <p>This number drives every critical business decision: how much you can afford to spend acquiring a customer, which customer segments to prioritise, which products to promote, and when a customer is at risk of churning. Without LTV, these decisions are guesses. With it, they are calculations.</p>
+        <p>Yet in five years of working with businesses on their data, I have found that fewer than 20% actually calculate LTV correctly — and many do not calculate it at all. This article fixes that.</p>
+
+        <blockquote>"If you do not know what a customer is worth, you do not know what a customer is worth spending to acquire."</blockquote>
+
+        <h2>Three LTV Models — Which One to Use</h2>
+        <p>There are three main approaches to calculating LTV, each suited to different situations:</p>
+        <ol>
+          <li><strong>Historic LTV</strong> — sums actual revenue from existing customers. Best when you have transaction history. Most accurate. We will use this one.</li>
+          <li><strong>Predictive LTV</strong> — uses machine learning to forecast future purchases. Best for large datasets with clear purchase patterns. More complex.</li>
+          <li><strong>Simple Formula LTV</strong> — Average Order Value × Purchase Frequency × Customer Lifespan. Quick but often inaccurate because it ignores variance and churn.</li>
+        </ol>
+        <div class="blog-callout warn">
+          <div class="blog-callout-icon">⚠️</div>
+          <div class="blog-callout-body">
+            <div class="blog-callout-title">The most common LTV mistake</div>
+            <div class="blog-callout-text">Using LTV = AOV × Frequency × Lifespan without accounting for gross margin. If your average order is £100, frequency is 4x/year, and lifespan is 3 years — your LTV is £1,200 in revenue. But if your gross margin is 30%, the real LTV is only £360. Decisions based on the revenue number will systematically overspend on acquisition.</div>
+          </div>
+        </div>
+
+        <h2>Step 1 — Calculate Historic LTV in SQL</h2>
+        <p>Start with the database. This query calculates each customer's lifetime revenue, order count, average order value, first purchase date, most recent purchase, and how many days they have been a customer.</p>
+
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>PostgreSQL — Historic LTV Base Query</span></div>
+          <pre><span class="kw">WITH</span> customer_orders <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>
+        o.customer_id,
+        c.customer_name,
+        c.segment,
+        c.acquisition_channel,
+        <span class="fn">SUM</span>(o.order_value)                    <span class="kw">AS</span> lifetime_revenue,
+        <span class="fn">SUM</span>(o.order_value * o.gross_margin)   <span class="kw">AS</span> lifetime_gross_profit,
+        <span class="fn">COUNT</span>(o.order_id)                     <span class="kw">AS</span> total_orders,
+        <span class="fn">AVG</span>(o.order_value)                    <span class="kw">AS</span> avg_order_value,
+        <span class="fn">MIN</span>(o.order_date)                     <span class="kw">AS</span> first_order_date,
+        <span class="fn">MAX</span>(o.order_date)                     <span class="kw">AS</span> last_order_date,
+        <span class="fn">MAX</span>(o.order_date) - <span class="fn">MIN</span>(o.order_date) <span class="kw">AS</span> customer_lifespan_days,
+        <span class="fn">NOW</span>()::date - <span class="fn">MAX</span>(o.order_date)      <span class="kw">AS</span> days_since_last_order
+    <span class="kw">FROM</span> orders o
+    <span class="kw">JOIN</span> customers c <span class="kw">ON</span> o.customer_id = c.customer_id
+    <span class="kw">GROUP BY</span>
+        o.customer_id, c.customer_name,
+        c.segment, c.acquisition_channel
+)
+<span class="kw">SELECT</span>
+    *,
+    <span class="cmt">-- Annualised LTV (gross profit per year)</span>
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> customer_lifespan_days > <span class="num">0</span>
+        <span class="kw">THEN</span> <span class="fn">ROUND</span>(lifetime_gross_profit / (customer_lifespan_days / <span class="num">365.0</span>), <span class="num">2</span>)
+        <span class="kw">ELSE</span> lifetime_gross_profit
+    <span class="kw">END</span>                                      <span class="kw">AS</span> annual_ltv,
+
+    <span class="cmt">-- LTV quartile ranking</span>
+    <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (
+        <span class="kw">ORDER BY</span> lifetime_gross_profit <span class="kw">DESC</span>
+    )                                        <span class="kw">AS</span> ltv_quartile
+
+<span class="kw">FROM</span> customer_orders
+<span class="kw">ORDER BY</span> lifetime_gross_profit <span class="kw">DESC</span>;
+
+<span class="cmt">-- Top results example:</span>
+<span class="cmt">-- customer  | segment    | ltv_revenue | ltv_profit | orders | quartile</span>
+<span class="cmt">-- Acme Ltd  | Enterprise |   £284,420  |   £96,703  |   47   |    1</span>
+<span class="cmt">-- Beta Co   | Mid-Market |   £142,810  |   £42,843  |   31   |    1</span>
+<span class="cmt">-- Gamma Inc | Enterprise |    £98,340  |   £29,502  |   22   |    2</span></pre>
+        </div>
+
+        <h2>Step 2 — RFM Segmentation in SQL</h2>
+        <p>LTV tells you what a customer has been worth. RFM (Recency, Frequency, Monetary) tells you what they are likely to do next — and therefore who to act on right now. Each customer gets a score of 1–4 on all three dimensions, then a combined segment label.</p>
+
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>PostgreSQL — Full RFM Segmentation</span></div>
+          <pre><span class="kw">WITH</span> rfm_raw <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>
+        customer_id,
+        <span class="fn">NOW</span>()::date - <span class="fn">MAX</span>(order_date)  <span class="kw">AS</span> recency_days,
+        <span class="fn">COUNT</span>(order_id)               <span class="kw">AS</span> frequency,
+        <span class="fn">SUM</span>(order_value)              <span class="kw">AS</span> monetary
+    <span class="kw">FROM</span> orders
+    <span class="kw">GROUP BY</span> customer_id
+),
+rfm_scored <span class="kw">AS</span> (
+    <span class="kw">SELECT</span>
+        customer_id,
+        recency_days,
+        frequency,
+        monetary,
+        <span class="cmt">-- Recency: lower days = better = higher score</span>
+        <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> recency_days <span class="kw">ASC</span>)  <span class="kw">AS</span> r_score,
+        <span class="cmt">-- Frequency: higher = better = higher score</span>
+        <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> frequency <span class="kw">DESC</span>)    <span class="kw">AS</span> f_score,
+        <span class="cmt">-- Monetary: higher = better = higher score</span>
+        <span class="fn">NTILE</span>(<span class="num">4</span>) <span class="kw">OVER</span> (<span class="kw">ORDER BY</span> monetary <span class="kw">DESC</span>)     <span class="kw">AS</span> m_score
+    <span class="kw">FROM</span> rfm_raw
+)
+<span class="kw">SELECT</span>
+    customer_id,
+    recency_days,
+    frequency,
+    monetary,
+    r_score, f_score, m_score,
+    (r_score + f_score + m_score)           <span class="kw">AS</span> rfm_total,
+    <span class="kw">CASE</span>
+        <span class="kw">WHEN</span> r_score = <span class="num">4</span> <span class="kw">AND</span> f_score = <span class="num">4</span>  <span class="kw">THEN</span> <span class="str">'Champions'</span>
+        <span class="kw">WHEN</span> r_score >= <span class="num">3</span> <span class="kw">AND</span> f_score >= <span class="num">3</span> <span class="kw">THEN</span> <span class="str">'Loyal Customers'</span>
+        <span class="kw">WHEN</span> r_score = <span class="num">4</span> <span class="kw">AND</span> f_score <= <span class="num">2</span>  <span class="kw">THEN</span> <span class="str">'New Customers'</span>
+        <span class="kw">WHEN</span> r_score <= <span class="num">2</span> <span class="kw">AND</span> f_score >= <span class="num">3</span>  <span class="kw">THEN</span> <span class="str">'At Risk'</span>
+        <span class="kw">WHEN</span> r_score = <span class="num">1</span> <span class="kw">AND</span> f_score >= <span class="num">2</span>  <span class="kw">THEN</span> <span class="str">'Cannot Lose Them'</span>
+        <span class="kw">WHEN</span> r_score = <span class="num">1</span> <span class="kw">AND</span> f_score = <span class="num">1</span>  <span class="kw">THEN</span> <span class="str">'Lost'</span>
+        <span class="kw">ELSE</span> <span class="str">'Potential'</span>
+    <span class="kw">END</span>                                     <span class="kw">AS</span> rfm_segment
+<span class="kw">FROM</span> rfm_scored
+<span class="kw">ORDER BY</span> rfm_total <span class="kw">DESC</span>;</pre>
+        </div>
+
+        <h2>Step 3 — Analyse and Visualise in Python</h2>
+        <p>Now bring the SQL results into Python for deeper analysis and visualisation. This code loads your query result, calculates segment-level averages, and produces a summary ready for a dashboard or PowerPoint.</p>
+
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>Python — LTV Segment Analysis</span></div>
+          <pre><span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+<span class="kw">import</span> sqlalchemy
+
+<span class="cmt"># Connect and load</span>
+engine = sqlalchemy.<span class="fn">create_engine</span>(DATABASE_URL)
+df = pd.<span class="fn">read_sql</span>(<span class="str">"SELECT * FROM rfm_results"</span>, engine)
+
+<span class="cmt"># Segment summary</span>
+summary = df.<span class="fn">groupby</span>(<span class="str">'rfm_segment'</span>).<span class="fn">agg</span>(
+    customer_count  = (<span class="str">'customer_id'</span>,  <span class="str">'count'</span>),
+    avg_ltv         = (<span class="str">'monetary'</span>,     <span class="str">'mean'</span>),
+    total_revenue   = (<span class="str">'monetary'</span>,     <span class="str">'sum'</span>),
+    avg_recency     = (<span class="str">'recency_days'</span>, <span class="str">'mean'</span>),
+    avg_frequency   = (<span class="str">'frequency'</span>,    <span class="str">'mean'</span>)
+).<span class="fn">round</span>(<span class="num">2</span>).<span class="fn">sort_values</span>(<span class="str">'total_revenue'</span>, ascending=<span class="kw">False</span>)
+
+<span class="fn">print</span>(summary)
+
+<span class="cmt"># Output:</span>
+<span class="cmt"># segment          | count | avg_ltv  | total_rev   | avg_recency</span>
+<span class="cmt"># Champions        |   142 | £18,420  | £2,615,640  |   12 days</span>
+<span class="cmt"># Loyal Customers  |   384 |  £6,280  | £2,411,520  |   34 days</span>
+<span class="cmt"># At Risk          |   218 |  £4,940  | £1,076,920  |  142 days</span>
+<span class="cmt"># Cannot Lose Them |    89 |  £8,120  |   £722,680  |  198 days</span>
+<span class="cmt"># New Customers    |   312 |    £840  |   £262,080  |    8 days</span>
+<span class="cmt"># Lost             |   441 |    £320  |   £141,120  |  380 days</span>
+
+<span class="cmt"># At-risk customers to action immediately</span>
+at_risk = df[df[<span class="str">'rfm_segment'</span>] == <span class="str">'At Risk'</span>].<span class="fn">sort_values</span>(<span class="str">'monetary'</span>, ascending=<span class="kw">False</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"\n{len(at_risk)} at-risk customers — £{at_risk['monetary'].sum():,.0f} at stake"</span>)
+<span class="cmt"># 218 at-risk customers — £1,076,920 at stake</span>
+
+<span class="cmt"># Export list for sales team</span>
+at_risk[[<span class="str">'customer_id'</span>, <span class="str">'monetary'</span>, <span class="str">'recency_days'</span>, <span class="str">'frequency'</span>]].<span class="fn">to_csv</span>(
+    <span class="str">'at_risk_customers.csv'</span>, index=<span class="kw">False</span>
+)</pre>
+        </div>
+
+        <h2>Step 4 — The LTV:CAC Ratio</h2>
+        <p>LTV in isolation is interesting. LTV divided by Customer Acquisition Cost (CAC) is actionable. This ratio tells you how efficient your customer acquisition is — and whether you can afford to grow faster.</p>
+
+        <div class="blog-code">
+          <div class="blog-code-header"><div class="blog-code-dots"><div class="blog-code-dot" style="background:#f97316"></div><div class="blog-code-dot" style="background:#f59e0b"></div><div class="blog-code-dot" style="background:#50fa7b"></div></div><span>Python — LTV:CAC by Acquisition Channel</span></div>
+          <pre"><span class="cmt"># Merge LTV data with marketing spend data</span>
+ltv_by_channel = df.<span class="fn">groupby</span>(<span class="str">'acquisition_channel'</span>)[<span class="str">'lifetime_gross_profit'</span>].<span class="fn">mean</span>()
+
+cac_by_channel = pd.<span class="fn">Series</span>({
+    <span class="str">'Google PPC'</span>:      <span class="num">280</span>,
+    <span class="str">'Email Marketing'</span>: <span class="num"> 42</span>,
+    <span class="str">'SEO'</span>:             <span class="num"> 95</span>,
+    <span class="str">'Social Media'</span>:    <span class="num">165</span>,
+    <span class="str">'Referral'</span>:        <span class="num"> 18</span>
+})
+
+ratio = (ltv_by_channel / cac_by_channel).<span class="fn">round</span>(<span class="num">1</span>).<span class="fn">sort_values</span>(ascending=<span class="kw">False</span>)
+<span class="fn">print</span>(ratio)
+
+<span class="cmt"># LTV:CAC Results:</span>
+<span class="cmt"># Referral         42.3x  ← extraordinary — invest more here</span>
+<span class="cmt"># Email Marketing  28.6x  ← excellent</span>
+<span class="cmt"># SEO              14.2x  ← great</span>
+<span class="cmt"># Social Media      6.8x  ← acceptable</span>
+<span class="cmt"># Google PPC        3.1x  ← barely viable — review spend</span>
+
+<span class="cmt"># Rule of thumb: LTV:CAC > 3x = viable, > 5x = healthy, > 10x = excellent</span></pre>
+        </div>
+
+        <div class="blog-callout tip">
+          <div class="blog-callout-icon">✅</div>
+          <div class="blog-callout-body">
+            <div class="blog-callout-title">What to do with this</div>
+            <div class="blog-callout-text">If your Referral channel has a 42x LTV:CAC ratio and Google PPC has 3x, the implication is clear — build a formal referral programme before spending another pound on PPC. This single analysis often justifies a complete reallocation of the marketing budget.</div>
+          </div>
+        </div>
+
+        <h2>What to Do With Each Segment</h2>
+        <p>The entire point of RFM segmentation is to take different actions with different groups. Here is the playbook:</p>
+        <ul>
+          <li><strong>Champions</strong> — reward them. Ask for referrals. Offer early access to new products. They will bring you more Champions.</li>
+          <li><strong>Loyal Customers</strong> — upsell. They trust you. Introduce them to higher-margin products or services they have not tried.</li>
+          <li><strong>At Risk</strong> — contact personally. These are high-value customers who have gone quiet. A personal email or call recovers a significant percentage.</li>
+          <li><strong>Cannot Lose Them</strong> — urgent outreach. High historical value, very inactive. This is your highest-priority retention list.</li>
+          <li><strong>New Customers</strong> — onboard properly. Their second purchase is the most important predictor of long-term retention. Make it easy.</li>
+          <li><strong>Lost</strong> — win-back campaign or accept the loss. Do not spend the same CAC to reacquire them — they have already shown low engagement.</li>
+        </ul>
+
+        <h2>Conclusion — LTV Is a Decision Engine</h2>
+        <p>Customer Lifetime Value is not a vanity metric for investor decks. It is a decision engine that tells you where to spend, who to call, and how fast you can grow. Build the SQL queries above on your own transaction data this week. The insights will pay for the time many times over.</p>
+        <p>If you want help building a full LTV and RFM model for your business — or want to connect this analysis to a Power BI dashboard your sales team can use daily — <a href="../index.html#contact">get in touch</a>.</p>
+
+        <div class="blog-divider"></div>
+        <div class="blog-cta-banner">
+          <div class="blog-cta-text">
+            <h3>Need a Customer Analytics Model?</h3>
+            <p>I build complete LTV and RFM segmentation models using your transaction data — delivered as SQL views, Python scripts, and a Power BI dashboard your team can use every week.</p>
+          </div>
+          <div class="blog-cta-btns">
+            <a href="../index.html#contact" class="btn-primary">Get a Quote →</a>
+            <a href="../services.html#analytics" class="btn-ghost">View Service</a>
+          </div>
+        </div>
+      </article>
+
+      <aside class="blog-sidebar">
+        <div class="blog-toc">
+          <div class="blog-toc-title">Table of Contents</div>
+          <ul class="blog-toc-list">
+            <li><a href="#" onclick="return false">Why LTV Is the Most Important Number</a></li>
+            <li><a href="#" onclick="return false">Three LTV Models</a></li>
+            <li><a href="#" onclick="return false">Step 1 — Historic LTV in SQL</a></li>
+            <li><a href="#" onclick="return false">Step 2 — RFM Segmentation in SQL</a></li>
+            <li><a href="#" onclick="return false">Step 3 — Analyse in Python</a></li>
+            <li><a href="#" onclick="return false">Step 4 — LTV:CAC Ratio</a></li>
+            <li><a href="#" onclick="return false">What to Do With Each Segment</a></li>
+            <li><a href="#" onclick="return false">Conclusion</a></li>
+          </ul>
+        </div>
+        <div class="blog-sidebar-author">
+          <div class="bsa-avatar">AT</div>
+          <div class="bsa-name">Awais Tahir</div>
+          <div class="bsa-role">Finance Professional · Data Analyst</div>
+          <div class="bsa-desc">Building customer analytics models that help businesses understand who their best customers are — and how to get more of them.</div>
+          <a href="../about.html" class="btn-ghost" style="width:100%;justify-content:center;font-size:13px;padding:10px">View Profile</a>
+        </div>
+        <div class="blog-related-sidebar">
+          <div class="blog-related-sidebar-title">Related Articles</div>
+          <a href="blog-sql-window-functions.html" class="brs-item"><div class="brs-icon" style="background:linear-gradient(135deg,#1a1a4a,#7c3aed)">🗄️</div><div><div class="brs-title">SQL Window Functions for Finance Analysts</div><div class="brs-cat">Data Analytics</div></div></a>
+          <a href="blog-pandas-financial-data.html" class="brs-item"><div class="brs-icon" style="background:linear-gradient(135deg,#0d2d0d,#059669)">🐍</div><div><div class="brs-title">Cleaning Financial Data with Python Pandas</div><div class="brs-cat">Python</div></div></a>
+          <a href="blog-cash-flow-management.html" class="brs-item"><div class="brs-icon" style="background:linear-gradient(135deg,#2d0a1a,#be185d)">💰</div><div><div class="brs-title">Why Profitable Businesses Run Out of Cash</div><div class="brs-cat">Business Finance</div></div></a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="blog-related-section">
+  <div class="container">
+    <div class="section-header scroll-reveal" style="margin-bottom:36px"><div class="section-label">Keep Reading</div><h2 class="section-title">More <span class="gradient-text">Articles</span></h2></div>
+    <div class="blog-related-grid">
+      <a href="blog-sql-window-functions.html" class="brel-card scroll-reveal"><div class="brel-img" style="background:linear-gradient(135deg,#080818,#1a1a4a,#7c3aed)">🗄️</div><div class="brel-body"><div class="brel-cat">Data Analytics</div><div class="brel-title">SQL Window Functions Every Finance Analyst Should Know</div><div class="brel-link">Read Article →</div></div></a>
+      <a href="blog-pandas-financial-data.html" class="brel-card scroll-reveal" style="transition-delay:.1s"><div class="brel-img" style="background:linear-gradient(135deg,#080d08,#0d2d0d,#059669)">🐍</div><div class="brel-body"><div class="brel-cat">Python</div><div class="brel-title">Cleaning Messy Financial Data with Python Pandas</div><div class="brel-link">Read Article →</div></div></a>
+      <a href="blog-cash-flow-management.html" class="brel-card scroll-reveal" style="transition-delay:.2s"><div class="brel-img" style="background:linear-gradient(135deg,#0a080a,#2d0a1a,#be185d)">💰</div><div class="brel-body"><div class="brel-cat">Business Finance</div><div class="brel-title">Why Profitable Businesses Still Run Out of Cash</div><div class="brel-link">Read Article →</div></div></a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="container"><div class="footer-inner"><div class="footer-brand"><div class="footer-logo"><span class="logo-at">AT</span><span class="logo-name">Awais Tahir</span></div><p class="footer-tagline">Finance Professional · Data Analyst · Future Finance-Tech Founder</p><p class="footer-copy">© 2025 Awais Tahir · iamawaistahir.com · All Rights Reserved</p></div><div class="footer-links"><div class="fl-col"><div class="fl-title">Quick Links</div><a href="../about.html">About</a><a href="../services.html">Services</a><a href="../portfolio.html">Portfolio</a><a href="../insights.html">All Articles</a><a href="../index.html#contact">Contact</a></div><div class="fl-col"><div class="fl-title">More Articles</div><a href="blog-ifrs-financial-statements.html">IFRS Guide</a><a href="blog-power-bi-mistakes.html">Power BI Mistakes</a><a href="blog-sql-window-functions.html">SQL Functions</a><a href="blog-cash-flow-management.html">Cash Flow</a></div></div></div><div class="footer-bottom"><span>Built with precision · iamawaistahir.com</span><div class="footer-socials"><a href="https://www.linkedin.com/in/iamawais1628/" target="_blank">in</a><a href="https://wa.me/923000889402" target="_blank">wa</a></div></div></div></footer>
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>const nb=document.getElementById('navbar');window.addEventListener('scroll',()=>{nb.classList.toggle('scrolled',window.scrollY>40);document.getElementById('scrollTop').classList.toggle('visible',window.scrollY>400);});const hb=document.getElementById('hamburger'),mm=document.getElementById('mobileMenu');hb.addEventListener('click',()=>{mm.classList.toggle('open');const s=hb.querySelectorAll('span');if(mm.classList.contains('open')){s[0].style.transform='rotate(45deg) translate(5px,5px)';s[1].style.opacity='0';s[2].style.transform='rotate(-45deg) translate(5px,-5px)';}else{s.forEach(x=>{x.style.transform='';x.style.opacity='';})}});function closeMobile(){mm.classList.remove('open');hb.querySelectorAll('span').forEach(s=>{s.style.transform='';s.style.opacity='';})}const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');})},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});document.querySelectorAll('.scroll-reveal').forEach(el=>obs.observe(el));</script>
+</body></html>
